@@ -1,10 +1,6 @@
-### Мінімізатор URL (URL Shortener)
+### Мінімізатор URL (URL Shortener) на базі MongoDB
 
 Сервіс для мінімізіції URL
-
-**Створення БД:**<br>
-php artisan migrate<br>
-php artisan migrate:refresh
 
 **Роут для мінімізації URL:**<br>
 /minimize?url=*ваш_повний_url*<br>
