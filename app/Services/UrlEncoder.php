@@ -2,25 +2,25 @@
 
 namespace App\Services;
 
-use App\Models\Repositories\UrlRepositoryException;
-use App\Models\Repositories\UrlRepositoryInterface;
+use App\Models\Repositories\MongoDbRepositoryException;
+use App\Models\Repositories\MongoDbRepositoryInterface;
 use App\Services\Helpers\MaskingDataInterface;
 
 class UrlEncoder implements UrlEncoderInterface
 {
     protected const INITIAL_DATA = 10000000;
 
-    protected UrlRepositoryInterface $urlRepository;
+    protected MongoDbRepositoryInterface $urlRepository;
     protected MaskingDataInterface $maskingData;
 
-    public function __construct(UrlRepositoryInterface $urlRepository, MaskingDataInterface $maskingData)
+    public function __construct(MongoDbRepositoryInterface $urlRepository, MaskingDataInterface $maskingData)
     {
         try {
             $this->urlRepository = $urlRepository;
             $this->maskingData = $maskingData;
 
-        } catch (UrlRepositoryException $repositoryException) {
-            // Прокидуємо UrlRepositoryException в Controller
+        } catch (MongoDbRepositoryException $repositoryException) {
+            // Прокидуємо MongoDbRepositoryException в Controller
             throw new UrlEncoderExeption($repositoryException->getMessage(), $repositoryException->getCode());
         }
     }
@@ -28,15 +28,15 @@ class UrlEncoder implements UrlEncoderInterface
     public function convertToShortUrl(string $hostName, string $originalUrl): string
     {
         try {
-            $id = $this->urlRepository->insertUrlAndGetId($originalUrl);
+            $id = $this->urlRepository->insertUrlAndReturnId($originalUrl);
             $urlData = self::INITIAL_DATA + $id;
             $shortUrl = base_convert($urlData, 10, 36);
             $maskedShortUrl = $this->maskingData->mask($shortUrl);
 
             return 'http://' . $hostName . '/' . $maskedShortUrl;
 
-        } catch (UrlRepositoryException $repositoryException) {
-            // Прокидуємо UrlRepositoryException в Controller
+        } catch (MongoDbRepositoryException $repositoryException) {
+            // Прокидуємо MongoDbRepositoryException в Controller
             throw new UrlEncoderExeption($repositoryException->getMessage(), $repositoryException->getCode());
         }
     }
@@ -55,8 +55,8 @@ class UrlEncoder implements UrlEncoderInterface
 
             return $originalUrl;
 
-        } catch (UrlRepositoryException $repositoryException) {
-            // Прокидуємо UrlRepositoryException в Controller
+        } catch (MongoDbRepositoryException $repositoryException) {
+            // Прокидуємо MongoDbRepositoryException в Controller
             throw new UrlEncoderExeption($repositoryException->getMessage(), $repositoryException->getCode());
         }
     }
