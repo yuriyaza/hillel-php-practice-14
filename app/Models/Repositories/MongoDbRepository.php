@@ -30,21 +30,17 @@ class MongoDbRepository implements MongoDbRepositoryInterface
 
     public function insertUrlAndReturnId(string $url): float
     {
-        try {
             return DB::collection('urls')
                 ->insertGetId([
-                    '_id' => $this->incrementUrlIdCounter(),
+                    '_id' => $this->incrementIdCounter(),
                     'url' => $url,
-                    'createdAt' => new UTCDateTime(time() * 1000),
-                    'updatedAt' => new UTCDateTime(time() * 1000),
+                    'created_at' => new UTCDateTime(time() * 1000),
+                    'updated_at' => new UTCDateTime(time() * 1000),
                 ]);
 
-        } catch (\Exception) {
-            throw new MongoDbRepositoryException('Database error', 500);
         }
-    }
 
-    public function incrementUrlIdCounter()
+    public function incrementIdCounter()
     {
         $data = DB::getCollection('counters')
             ->findOneAndUpdate(
